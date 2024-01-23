@@ -23,7 +23,10 @@ class NoteManager:
             writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter=';')
             writer.writeheader()
             for note in self.notes:
-                writer.writerow({'note_id': note.note_id, 'title': note.title, 'body': note.body, 'timestamp': note.timestamp})
+                writer.writerow({'note_id': note.note_id,
+                                 'title': note.title,
+                                 'body': note.body,
+                                 'timestamp': note.timestamp})
 
     def add_note(self, title, body):
         if not title or not body:
