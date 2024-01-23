@@ -9,32 +9,31 @@ class MenuView:
     def get_user_choice(self):
         return input("Enter your choice: ")
 
-    def display_note_titles(self, note_titles):
-        if note_titles:
-            print("Available Note Titles:")
-            for title in note_titles:
-                print(f"- {title}")
+    def read_notes(self, notes):
+        if notes:
+            print("Available Notes:")
+            for note in notes:
+                print(f"- {note.title} (ID: {note.note_id})")
         else:
             print("No notes available.")
 
     def create_note(self):
-        title = input("Enter the title of the note: ")
-        body = input("Enter the body of the note: ")
+        title = input("Enter the title of the note (press Enter to return to the main menu): ")
+        if not title:
+            return None, None
+        body = input("Enter the body of the note (press Enter to return to the main menu): ")
         return title, body
 
-    def read_notes(self, note_titles):
-        self.display_note_titles(note_titles)
-        choice = input("Enter the title of the note to read: ")
-        return choice
-
-    def edit_note(self, note_titles):
-        self.display_note_titles(note_titles)
-        choice = input("Enter the title of the note to edit: ")
+    def edit_note(self):
         new_title = input("Enter the new title: ")
         new_body = input("Enter the new body: ")
-        return choice, new_title, new_body
+        return new_title, new_body
 
-    def delete_note(self, note_titles):
-        self.display_note_titles(note_titles)
-        choice = input("Enter the title of the note to delete: ")
-        return choice
+    def delete_note(self, notes):
+        self.read_notes(notes)
+        choice = input("Enter the ID of the note to delete (press Enter to return to the main menu): ")
+        return choice if choice.strip() else None
+
+    def get_note_id(self):
+        note_id = input("Enter the ID of the note (press Enter to return to the main menu): ")
+        return note_id if note_id.strip() else None

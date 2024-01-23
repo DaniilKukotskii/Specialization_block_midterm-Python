@@ -26,6 +26,9 @@ class NoteManager:
                 writer.writerow({'note_id': note.note_id, 'title': note.title, 'body': note.body, 'timestamp': note.timestamp})
 
     def add_note(self, title, body):
+        if not title or not body:
+            print("Note creation cancelled.")
+            return
         note_id = len(self.notes) + 1
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         new_note = Note(note_id, title, body, timestamp)
@@ -35,15 +38,25 @@ class NoteManager:
     def read_notes(self):
         return self.notes
 
-    def edit_note_by_title(self, title, new_title, new_body):
+    def edit_note_by_id(self, note_id, new_title, new_body):
         for note in self.notes:
-            if note.title == title:
+            if note.note_id == note_id:
                 note.title = new_title
                 note.body = new_body
                 note.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.save_to_csv()
+                print("Note successfully edited.")
                 break
+        else:
+            print("Note not found.")
 
-    def delete_note_by_title(self, title):
-        self.notes = [note for note in self.notes if note.title != title]
+    def delete_note_by_id(self, note_id):
+        self.notes = [note for note in self.notes if note.note_id != note_id]
         self.save_to_csv()
+        print("Note successfully deleted.")
+
+    def get_note_by_id(self, note_id):
+        for note in self.notes:
+            if note.note_id == note_id:
+                return note
+        return None
