@@ -14,29 +14,34 @@ class NotePresenter:
                 self.note_manager.add_note(title, body)
 
             elif choice == "2":
-                notes = self.note_manager.read_notes()
-                self.menu_view.read_notes(notes)
+                filter_choice = self.menu_view.get_filter_choice("Read")
+                notes = self.note_manager.filter_notes(filter_choice)
+                self.menu_view.read_notes(notes, filtered=(filter_choice != ""))
                 note_id = self.menu_view.get_note_id()
-                if note_id is not None:
+                if note_id:
                     note = self.note_manager.get_note_by_id(int(note_id))
                     if note:
                         self.note_view.display_note(note)
+                        input("Press Enter to return to the main menu...")
 
             elif choice == "3":
                 notes = self.note_manager.read_notes()
-                self.menu_view.read_notes(notes)
-                note_id = self.menu_view.get_note_id()
-                if note_id is not None:
-                    new_title, new_body = self.menu_view.edit_note()
-                    if new_title is not None and new_body is not None:
-                        self.note_manager.edit_note_by_id(int(note_id), new_title, new_body)
+                note_id = self.menu_view.edit_note(notes)
+                if note_id:
+                    edit_choice = self.menu_view.get_edit_choice()
+                    if edit_choice == "1" or edit_choice == "2":
+                        new_value = input(f"Enter the new {'Title' if edit_choice == '1' else 'Body'}: ")
+                        self.note_manager.edit_note_by_id(int(note_id), edit_choice, new_value)
+                        print("Note successfully edited.")
+                    else:
+                        print("Invalid edit choice. Note not edited.")
 
             elif choice == "4":
                 notes = self.note_manager.read_notes()
-                self.menu_view.read_notes(notes)
-                note_id = self.menu_view.get_note_id()
-                if note_id is not None:
+                note_id = self.menu_view.delete_note(notes)
+                if note_id:
                     self.note_manager.delete_note_by_id(int(note_id))
+                    print("Note successfully deleted.")
 
             elif choice == "5":
                 break
