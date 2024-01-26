@@ -12,9 +12,23 @@ class NoteManager:
         try:
             with open(self.file_path, 'r', newline='') as file:
                 reader = csv.DictReader(file, delimiter=';')
-                notes = [Note(int(row['note_id']), row['title'], row['body'], row['timestamp']) for row in reader]
+                notes = []
+
+                for row in reader:
+                    try:
+                        note_id = int(row['note_id'])
+                        title = row['title']
+                        body = row['body']
+                        timestamp = row['timestamp']
+                        new_note = Note(note_id, title, body, timestamp)
+                        notes.append(new_note)
+                    except (ValueError, KeyError):
+                        print("Error loading note:", row)
+
         except FileNotFoundError:
+            print("Файл не найден")
             notes = []
+
         return notes
 
     def save_to_csv(self):
@@ -23,10 +37,7 @@ class NoteManager:
             writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter=';')
             writer.writeheader()
             for note in self.notes:
-                writer.writerow({'note_id': note.note_id,
-                                 'title': note.title,
-                                 'body': note.body,
-                                 'timestamp': note.timestamp})
+                writer.writerow({'note_id': note.note_id, 'title': note.title, 'body': note.body, 'timestamp': note.timestamp})
 
     def add_note(self, title, body):
         if not title or not body:
@@ -38,25 +49,31 @@ class NoteManager:
         self.notes.append(new_note)
         self.save_to_csv()
 
+    def filter_notes(self, filter_choice):
+        if filter_choice == "1":
+            return sorted(self.notes, key=lambda x: x.timestamp, reverse=True)
+        elif filter_choice == "2":
+            return sorted(self.notes, key=lambda x: x.timestamp)
+        else:
+            return self.notes
+
     def read_notes(self):
         return self.notes
 
-    def edit_note_by_id(self, note_id, new_title, new_body):
+    def edit_note_by_id(self, note_id, edit_choice, new_value):
         for note in self.notes:
             if note.note_id == note_id:
-                note.title = new_title
-                note.body = new_body
+                if edit_choice == "1":
+                    note.title = new_value
+                elif edit_choice == "2":
+                    note.body = new_value
                 note.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.save_to_csv()
-                print("Note successfully edited.")
                 break
-        else:
-            print("Note not found.")
 
     def delete_note_by_id(self, note_id):
         self.notes = [note for note in self.notes if note.note_id != note_id]
         self.save_to_csv()
-        print("Note successfully deleted.")
 
     def get_note_by_id(self, note_id):
         for note in self.notes:
